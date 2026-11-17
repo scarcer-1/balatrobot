@@ -5,6 +5,7 @@ import subprocess
 from dataclasses import replace
 from datetime import datetime
 from pathlib import Path
+from typing import Self
 
 import httpx
 
@@ -124,12 +125,12 @@ class BalatroInstance:
                 loop.run_in_executor(None, process.wait),
                 timeout=5,
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print(f"Force killing instance on port {self._config.port}...")
             process.kill()
             await loop.run_in_executor(None, process.wait)
 
-    async def __aenter__(self) -> "BalatroInstance":
+    async def __aenter__(self) -> Self:
         """Start instance on context entry."""
         await self.start()
         return self

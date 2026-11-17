@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -165,4 +166,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

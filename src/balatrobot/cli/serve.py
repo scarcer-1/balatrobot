@@ -13,7 +13,6 @@ PLATFORM_CHOICES = ["darwin", "linux", "windows", "native"]
 
 
 def serve(
-    # fmt: off
     host: Annotated[
         str | None, typer.Option(help="Server hostname (default: 127.0.0.1)")
     ] = None,
@@ -60,7 +59,6 @@ def serve(
     platform: Annotated[
         str | None, typer.Option(help="Platform (darwin, linux, windows, native)")
     ] = None,
-    # fmt: on
 ) -> None:
     """Start Balatro with BalatroBot mod loaded."""
     # Validate platform choice

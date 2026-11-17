@@ -6,8 +6,9 @@ import os
 import random
 import tempfile
 import uuid
+from collections.abc import AsyncGenerator, Generator
 from pathlib import Path
-from typing import Any, AsyncGenerator, Generator
+from typing import Any
 
 import httpx
 import pytest
@@ -149,7 +150,7 @@ def port(worker_id) -> int:
 
 
 @pytest.fixture(scope="session")
-async def balatro_server(port: int, worker_id) -> AsyncGenerator[None, None]:
+async def balatro_server(port: int, worker_id) -> AsyncGenerator[None]:
     """Wait for pre-started Balatro instance to be healthy."""
     timeout = 10.0
     elapsed = 0.0
@@ -165,7 +166,7 @@ async def balatro_server(port: int, worker_id) -> AsyncGenerator[None, None]:
 
 
 @pytest.fixture
-def client(host: str, port: int, balatro_server) -> Generator[httpx.Client, None, None]:
+def client(host: str, port: int, balatro_server) -> Generator[httpx.Client]:
     """Create an HTTP client connected to Balatro game instance.
 
     Args:
@@ -190,7 +191,7 @@ def client(host: str, port: int, balatro_server) -> Generator[httpx.Client, None
 def api(
     client: httpx.Client,
     method: str,
-    params: dict = {},
+    params: dict | None = None,
     timeout: float = REQUEST_TIMEOUT,
 ) -> dict[str, Any]:
     """Send a JSON-RPC 2.0 API call to the Balatro game and get the response.
@@ -198,7 +199,7 @@ def api(
     Args:
         client: The HTTP client connected to the game.
         method: The name of the API method to call.
-        params: Dictionary of parameters to pass to the API method (default: {}).
+        params: Dictionary of parameters to pass to the API method (default: none).
         timeout: Request timeout in seconds (default: 5.0).
 
     Returns:
@@ -206,6 +207,9 @@ def api(
     """
     global _request_id_counter
     _request_id_counter += 1
+
+    if params is None:
+        params = {}
 
     payload = {
         "jsonrpc": "2.0",
@@ -293,7 +297,6 @@ def load_fixture(
     If the fixture file doesn't exist or cache=False, it will be automatically
     generated using the setup steps defined in fixtures.json.
     """
-    global _USE_CACHE_DEFAULT
     if cache is None:
         cache = _USE_CACHE_DEFAULT
 

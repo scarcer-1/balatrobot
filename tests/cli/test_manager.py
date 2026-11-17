@@ -111,7 +111,7 @@ class TestBalatroInstanceStop:
             if call_count == 1:
                 # First call (graceful wait) times out
                 await coro  # Consume the coroutine to avoid warning
-                raise asyncio.TimeoutError()
+                raise TimeoutError()
             # Second call (after kill) succeeds
             return await original_wait_for(coro, timeout)
 

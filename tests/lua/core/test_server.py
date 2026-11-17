@@ -524,7 +524,7 @@ class TestHTTPServerConcurrency:
                     while True:
                         try:
                             chunk = s.recv(4096)
-                        except socket.timeout:
+                        except TimeoutError:
                             break
                         if not chunk:
                             break

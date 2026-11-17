@@ -36,6 +36,12 @@ build-backend = "hatchling.build"
 lint.extend-select = ["I"]
 lint.task-tags = ["FIX", "TODO", "HACK", "WARN", "PERF", "NOTE", "TEST"]
 
+[tool.ruff.lint.per-file-ignores]
+# Test helpers catch broadly on purpose: teardown must not raise, and the
+# fixture generator reports a per-item failure and carries on. Narrowing these
+# handlers would hide the very errors the tests are asserting against.
+"tests/**" = ["BLE001"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "session"

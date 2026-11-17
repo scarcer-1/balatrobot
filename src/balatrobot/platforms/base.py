@@ -1,5 +1,6 @@
 """Base launcher class for all platforms."""
 
+import asyncio
 import subprocess
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -58,15 +59,18 @@ class BaseLauncher(ABC):
 
         log_path = session_dir / f"{config.port}.log"
 
-        with open(log_path, "w") as log:
-            process = subprocess.Popen(
-                cmd,
-                env=env,
-                stdout=log,
-                stderr=subprocess.STDOUT,
-            )
+        def spawn() -> subprocess.Popen:
+            with open(log_path, "w") as log:
+                return subprocess.Popen(
+                    cmd,
+                    env=env,
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                )
 
-        return process
+        # Opening the log and starting the process both block; the launcher's
+        # start() is async, so keep them off the event loop.
+        return await asyncio.to_thread(spawn)
 
     def cleanup(self, config: Config) -> None:
         """Platform-specific cleanup before terminating the process.
@@ -75,4 +79,3 @@ class BaseLauncher(ABC):
         Override in platform launchers that need special shutdown
         (e.g. wineserver -k for Proton on Linux).
         """
-        pass
